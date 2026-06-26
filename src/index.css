@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream text-ink font-body antialiased;
+  margin: 0;
+  overscroll-behavior-y: none;
+}
+
+/* keep latin words upright inside rtl */
+.latin {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ---- reusable surface styles ---- */
+.surface {
+  @apply bg-white rounded-3xl shadow-card border border-black/[0.04];
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3
+    font-semibold transition-all duration-200 active:scale-[0.97] select-none;
+}
+.btn-primary {
+  @apply btn bg-teal text-white shadow-glow hover:bg-deep;
+}
+.btn-gold {
+  @apply btn bg-gold text-ink hover:bg-goldLight;
+}
+.btn-ghost {
+  @apply btn bg-white/10 text-white border border-white/20 hover:bg-white/20;
+}
+.btn-soft {
+  @apply btn bg-sand text-deep hover:bg-dawn/60;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold;
+}
+
+/* eyebrow label */
+.eyebrow {
+  @apply inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] text-teal/80 uppercase;
+}
+
+/* the signature split divider — the "two paths" brand motif */
+.split-rule {
+  height: 3px;
+  background: linear-gradient(90deg, #0c1620 0%, #1d5b6e 45%, #c9962f 55%, #f3d9a6 100%);
+  border-radius: 999px;
+}
+
+/* hide scrollbars on horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* gradient text */
+.text-gradient {
+  background: linear-gradient(100deg, #1d5b6e, #c9962f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* focus visibility */
+:focus-visible {
+  outline: 3px solid #1d5b6e;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
