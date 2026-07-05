@@ -28,7 +28,6 @@ import {
   ChevronUp,
   ChevronDown,
   RotateCcw,
-  Cross,
   BookMarked,
 } from "lucide-react";
 
