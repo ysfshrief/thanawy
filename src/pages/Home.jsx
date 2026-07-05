@@ -156,6 +156,8 @@ export default function Home() {
           <QuickCard to="/teams" emoji="👥" title="الفرق" sub="٣ فرق · القادة" />
           <QuickCard to="/rankings" emoji="🏆" title="النتائج" sub="ترتيب الفرق" />
           <QuickCard to="/hymns" emoji="🎶" title="الترانيم" sub="كلمات وتحميل" />
+          <QuickCard to="/prayers" emoji="🙏" title="الصلوات" sub="صلوات الخلوة" />
+          <QuickCard to="/bible" emoji="📖" title="الكتاب المقدس" sub="الأسفار والإصحاحات" />
         </div>
       </section>
     </div>
