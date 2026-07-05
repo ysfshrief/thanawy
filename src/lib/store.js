@@ -29,6 +29,8 @@ const DEFAULTS = {
   spiritualWord: { driveUrl: "", note: "" },
   bibleStudy: { driveUrl: "", note: "" },
   teamLogos: {}, // { teamId: driveUrl }
+  schedule: null, // custom schedule (null = use built-in seed)
+  scheduleState: { hidden: false }, // admin show/hide the schedule
 };
 
 function lsGet(key) {
