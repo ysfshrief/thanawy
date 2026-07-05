@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { SCHEDULE } from "../lib/seed";
+import { SCHEDULE as SEED_SCHEDULE } from "../lib/seed";
 import {
   resolveScheduleState,
   fmtTime,
@@ -7,22 +7,35 @@ import {
   diffParts,
   clamp,
 } from "../lib/utils";
-import { useNow } from "../lib/hooks";
-import { Clock, Radio } from "lucide-react";
+import { useNow, useStore } from "../lib/hooks";
+import { Clock, Radio, EyeOff } from "lucide-react";
 
 export default function Schedule() {
   const now = useNow(1000);
+
+  // schedule + visibility are admin-controllable via the store,
+  // falling back to the built-in seed schedule.
+  const [customSchedule] = useStore("schedule", null);
+  const [scheduleState] = useStore("scheduleState", { hidden: false });
+  const SCHEDULE =
+    Array.isArray(customSchedule) && customSchedule.length
+      ? customSchedule
+      : SEED_SCHEDULE;
+
   const { current, next } = resolveScheduleState(SCHEDULE, now);
 
   // pick default tab = the day containing "now", else day 1
   const todayId = useMemo(() => {
     const t = now.toISOString().slice(0, 10);
     const match = SCHEDULE.find((d) => d.date === t);
-    return match?.id || SCHEDULE[0].id;
-  }, [now]);
+    return match?.id || SCHEDULE[0]?.id;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [now, SCHEDULE]);
 
-  const [activeDay, setActiveDay] = useState(todayId);
-  const day = SCHEDULE.find((d) => d.id === activeDay);
+  const [activeDayId, setActiveDayId] = useState(null);
+  const activeDay = activeDayId || todayId;
+  const day = SCHEDULE.find((d) => d.id === activeDay) || SCHEDULE[0];
+  const setActiveDay = setActiveDayId;
 
   // progress through the active day
   const dayProgress = useMemo(() => {
@@ -34,6 +47,25 @@ export default function Schedule() {
     const pct = clamp(((now - start) / (end - start)) * 100, 0, 100);
     return pct;
   }, [day, now]);
+
+  // hidden by admin (after all hooks, to respect the Rules of Hooks)
+  if (scheduleState?.hidden) {
+    return (
+      <div className="mx-auto max-w-3xl px-5 pt-6 animate-fadeUp">
+        <div className="surface p-10 text-center mt-6">
+          <span className="grid place-items-center h-16 w-16 mx-auto rounded-2xl bg-sand mb-4">
+            <EyeOff size={28} className="text-teal" />
+          </span>
+          <p className="font-display text-xl font-extrabold text-deep">
+            البرنامج لسه مقفول
+          </p>
+          <p className="text-ink/60 mt-2 leading-relaxed">
+            هيتم عرض برنامج الخلوة في وقته. استنونا! 🔥
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-5 pt-6 animate-fadeUp">
@@ -151,6 +183,15 @@ export default function Schedule() {
                   >
                     {fmtTime(item.start)} – {fmtTime(item.end)}
                   </p>
+                  {item.desc && (
+                    <p
+                      className={`text-xs mt-1 leading-relaxed whitespace-pre-line ${
+                        isCurrent ? "text-white/80" : "text-ink/55"
+                      }`}
+                    >
+                      {item.desc}
+                    </p>
+                  )}
                 </div>
                 {isCurrent && (
                   <span className="chip bg-white/20 text-white">
