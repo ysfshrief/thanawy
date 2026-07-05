@@ -192,6 +192,12 @@ export default function Schedule() {
                       {item.desc}
                     </p>
                   )}
+                  {item.rotation && (
+                    <RotationTable
+                      rotation={item.rotation}
+                      isCurrent={isCurrent}
+                    />
+                  )}
                 </div>
                 {isCurrent && (
                   <span className="chip bg-white/20 text-white">
@@ -232,6 +238,45 @@ function NextBanner({ next, now, live, current }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+// جدول توزيع الفرق على الأماكن (للفقرات المتنوعة)
+function RotationTable({ rotation, isCurrent }) {
+  if (!rotation || !rotation.places || !rotation.slots) return null;
+  const border = isCurrent ? "border-white/25" : "border-black/10";
+  const head = isCurrent ? "text-white/90" : "text-teal";
+  const cell = isCurrent ? "text-white/85" : "text-deep";
+  const timeC = isCurrent ? "text-white/70" : "text-ink/55";
+  return (
+    <div className={`mt-3 rounded-xl overflow-hidden border ${border}`}>
+      <table className="w-full text-xs border-collapse">
+        <thead>
+          <tr>
+            <th className={`p-2 text-right font-extrabold ${head}`}>الوقت</th>
+            {rotation.places.map((pl, i) => (
+              <th key={i} className={`p-2 text-center font-extrabold ${head}`}>
+                {pl}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rotation.slots.map((slot, r) => (
+            <tr key={r} className={`border-t ${border}`}>
+              <td className={`p-2 font-bold latin whitespace-nowrap ${timeC}`}>
+                {slot.time}
+              </td>
+              {slot.teams.map((tm, c) => (
+                <td key={c} className={`p-2 text-center font-semibold ${cell}`}>
+                  {tm}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
