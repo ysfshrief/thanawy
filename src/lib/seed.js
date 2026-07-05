@@ -106,19 +106,23 @@ export const SCHEDULE = [
     date: "2026-07-09",
     weekday: "الخميس",
     items: [
-      { start: "09:00", end: "09:30", title: "التجمع", desc: "", icon: "👋" },
-      { start: "09:30", end: "11:00", title: "الطريق إلى مكان الخلوة", desc: "", icon: "🚌" },
-      { start: "11:00", end: "11:30", title: "استلام الغرف", desc: "", icon: "🛏️" },
-      { start: "11:30", end: "12:00", title: "مقدمة الخلوة", desc: "", icon: "✨" },
-      { start: "12:00", end: "13:00", title: "دراسة كتاب", desc: "", icon: "📖" },
-      { start: "13:00", end: "14:30", title: "كلمة روحية", desc: "", icon: "✝️" },
-      { start: "14:30", end: "15:30", title: "غداء", desc: "", icon: "🍽️" },
-      { start: "15:30", end: "17:00", title: "ورش عمل", desc: "", icon: "🛠️" },
-      { start: "17:00", end: "19:00", title: "حمام السباحة", desc: "", icon: "🏊" },
-      { start: "19:00", end: "20:30", title: "عشاء + راحة", desc: "", icon: "🌙" },
-      { start: "20:30", end: "21:30", title: "صلاة وتسبيح", desc: "", icon: "🙏" },
-      { start: "21:30", end: "24:00", title: "كرة قدم", desc: "", icon: "⚽" },
-      { start: "24:00", end: "24:01", title: "نوم", desc: "", icon: "😴" },
+      { start: "08:00", end: "10:00", title: "التجمع والتحرك", desc: "التجمع الساعة ٨ ص", icon: "👋" },
+      { start: "10:00", end: "10:00", title: "الوصول إلى البيت", desc: "", icon: "🏠" },
+      { start: "10:00", end: "11:00", title: "استلام الغرف", desc: "", icon: "🛏️" },
+      { start: "11:00", end: "12:00", title: "دراسة كتاب", desc: "", icon: "📖" },
+      { start: "12:00", end: "13:00", title: "لعبة المهام", desc: "", icon: "🎯" },
+      { start: "13:00", end: "14:00", title: "كلمة روحية", desc: "", icon: "✝️" },
+      { start: "14:00", end: "16:00", title: "بسين", desc: "حمام السباحة", icon: "🏊" },
+      { start: "16:00", end: "17:00", title: "غداء", desc: "", icon: "🍽️" },
+      { start: "17:00", end: "19:00", title: "ألعاب", desc: "", icon: "🎮" },
+      { start: "19:00", end: "20:00", title: "تشطيف وراحة", desc: "", icon: "🧹" },
+      { start: "20:00", end: "21:00", title: "صلاة النوم وخلوة", desc: "", icon: "🙏" },
+      { start: "21:00", end: "23:00", title: "فقرات متنوعة للفرق", desc: "بودكاست · اللغز · المسابقة — بالتبديل بين القاعات:
+٩:٠٠–٩:٣٠: البسين (كات هيت) · قاعة مارمينا (طانخو) · قاعة أبو سيفين (شيش)
+٩:٣٠–١٠:٠٠: البسين (شيش) · قاعة مارمينا (كات هيت) · قاعة أبو سيفين (طانخو)
+١٠:٠٠–١٠:٣٠: البسين (طانخو) · قاعة مارمينا (شيش) · قاعة أبو سيفين (كات هيت)", icon: "🎤" },
+      { start: "23:00", end: "24:00", title: "عشاء", desc: "", icon: "🍽️" },
+      { start: "24:00", end: "25:00", title: "هوس إيروف", desc: "", icon: "🎵" },
     ],
   },
   {
@@ -127,17 +131,21 @@ export const SCHEDULE = [
     date: "2026-07-10",
     weekday: "الجمعة",
     items: [
-      { start: "10:00", end: "11:30", title: "فطار", desc: "", icon: "🍳" },
+      { start: "07:30", end: "10:00", title: "قداس", desc: "", icon: "⛪" },
+      { start: "10:00", end: "11:00", title: "فطار", desc: "", icon: "🍳" },
+      { start: "11:00", end: "11:30", title: "سؤال محيّرني", desc: "", icon: "❓" },
       { start: "11:30", end: "12:30", title: "دراسة كتاب", desc: "", icon: "📖" },
-      { start: "12:30", end: "13:00", title: "اسكتشات", desc: "", icon: "🎭" },
-      { start: "13:00", end: "15:00", title: "حمام سباحة", desc: "", icon: "🏊" },
-      { start: "15:00", end: "16:00", title: "غداء", desc: "", icon: "🍽️" },
-      { start: "16:00", end: "17:00", title: "صلاة غروب + راحة", desc: "", icon: "🌅" },
-      { start: "17:00", end: "19:00", title: "كلمة روحية", desc: "", icon: "✝️" },
-      { start: "19:00", end: "21:00", title: "حفلة سمر", desc: "", icon: "🔥" },
-      { start: "21:00", end: "22:00", title: "عشاء", desc: "", icon: "🍽️" },
-      { start: "22:00", end: "23:00", title: "صلاة وتسبيح", desc: "", icon: "🙏" },
-      { start: "23:00", end: "23:59", title: "كرة قدم", desc: "", icon: "⚽" },
+      { start: "12:30", end: "13:00", title: "شاي وحاجة حلوة", desc: "", icon: "🍰" },
+      { start: "13:00", end: "14:00", title: "فقرة يلا ننمو", desc: "", icon: "🌱" },
+      { start: "14:00", end: "15:00", title: "كلمة روحية", desc: "", icon: "✝️" },
+      { start: "15:00", end: "17:00", title: "بسين", desc: "حمام السباحة", icon: "🏊" },
+      { start: "17:00", end: "18:30", title: "غداء وتشطيف", desc: "", icon: "🍽️" },
+      { start: "18:30", end: "19:30", title: "خلوة وصلاة الغروب", desc: "", icon: "🌅" },
+      { start: "19:30", end: "21:00", title: "فقرة الاسكتشات", desc: "", icon: "🎭" },
+      { start: "21:00", end: "22:00", title: "معرض الهدايا", desc: "", icon: "🎁" },
+      { start: "22:00", end: "23:00", title: "هوس إيروف", desc: "", icon: "🎵" },
+      { start: "23:00", end: "24:00", title: "عشاء", desc: "", icon: "🍽️" },
+      { start: "24:00", end: "26:00", title: "لعب كورة وطايرة", desc: "", icon: "⚽" },
     ],
   },
   {
@@ -146,11 +154,9 @@ export const SCHEDULE = [
     date: "2026-07-11",
     weekday: "السبت",
     items: [
-      { start: "07:00", end: "09:00", title: "صلاة باكر / سباحة", desc: "", icon: "🌄" },
-      { start: "09:00", end: "10:00", title: "فطار", desc: "", icon: "🍳" },
-      { start: "10:00", end: "11:00", title: "تسليم الغرف", desc: "", icon: "🧳" },
-      { start: "11:00", end: "12:00", title: "كلمة ختامية", desc: "", icon: "✝️" },
-      { start: "12:00", end: "13:00", title: "العودة إلى دمنهور", desc: "", icon: "🏠" },
+      { start: "07:00", end: "07:30", title: "صلاة باكر", desc: "", icon: "🌄" },
+      { start: "07:30", end: "09:00", title: "بسين وفطار", desc: "", icon: "🏊" },
+      { start: "10:00", end: "11:00", title: "التوجّه إلى دير مارمينا", desc: "", icon: "⛪" },
     ],
   },
 ];
@@ -198,7 +204,6 @@ export const RETREAT = {
 };
 
 export const ADMIN = {
-  username: "costa",
-  // password as given in the brief
-  password: "0 10 11428739",
+  username: "abanoub",
+  password: "01067873773",
 };
