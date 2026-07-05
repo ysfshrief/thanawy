@@ -28,6 +28,8 @@ import {
   ChevronUp,
   ChevronDown,
   RotateCcw,
+  Cross,
+  BookMarked,
 } from "lucide-react";
 
 /* ───────────────────────── LOGIN ───────────────────────── */
@@ -814,6 +816,392 @@ function ScheduleManager() {
   );
 }
 
+/* ───────────────────────── PRAYERS MANAGER ───────────────────────── */
+function PrayersManager() {
+  const [prayers, setPrayers] = useStore("prayers", []);
+  const [openId, setOpenId] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [newSection, setNewSection] = useState("");
+
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const active = prayers.find((p) => p.id === openId);
+
+  const addPrayer = () => {
+    if (!newTitle.trim()) return;
+    const p = { id: `pr_${Date.now()}`, title: newTitle.trim(), sections: [] };
+    setPrayers([...prayers, p]);
+    setNewTitle("");
+    setOpenId(p.id);
+  };
+
+  const deletePrayer = (id) => {
+    if (!window.confirm("حذف الصلاة نهائياً؟")) return;
+    setPrayers(prayers.filter((p) => p.id !== id));
+    if (openId === id) setOpenId(null);
+  };
+
+  const updatePrayerTitle = (id, title) => {
+    setPrayers(prayers.map((p) => (p.id === id ? { ...p, title } : p)));
+  };
+
+  const addSection = (label) => {
+    if (!label.trim()) return;
+    const next = clone(prayers);
+    const p = next.find((x) => x.id === openId);
+    p.sections = p.sections || [];
+    p.sections.push({ id: `s_${Date.now()}`, label: label.trim(), content: "" });
+    setPrayers(next);
+    setNewSection("");
+  };
+
+  const updateSection = (secId, field, value) => {
+    const next = clone(prayers);
+    const p = next.find((x) => x.id === openId);
+    const s = p.sections.find((x) => x.id === secId);
+    s[field] = value;
+    setPrayers(next);
+  };
+
+  const deleteSection = (secId) => {
+    const next = clone(prayers);
+    const p = next.find((x) => x.id === openId);
+    p.sections = p.sections.filter((s) => s.id !== secId);
+    setPrayers(next);
+  };
+
+  const moveSection = (idx, dir) => {
+    const next = clone(prayers);
+    const p = next.find((x) => x.id === openId);
+    const j = idx + dir;
+    if (j < 0 || j >= p.sections.length) return;
+    [p.sections[idx], p.sections[j]] = [p.sections[j], p.sections[idx]];
+    setPrayers(next);
+  };
+
+  // ── editing a single prayer's sections ──
+  if (active) {
+    return (
+      <Card icon={Cross} title="تعديل الصلاة">
+        <button
+          onClick={() => setOpenId(null)}
+          className="text-sm font-bold text-teal mb-3"
+        >
+          ← كل الصلوات
+        </button>
+
+        <input
+          value={active.title}
+          onChange={(e) => updatePrayerTitle(active.id, e.target.value)}
+          placeholder="عنوان الصلاة"
+          className="w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm font-bold outline-none focus:border-teal mb-4"
+        />
+
+        <div className="flex flex-col gap-3">
+          {(active.sections || []).map((sec, idx) => (
+            <div
+              key={sec.id}
+              className="rounded-2xl border border-black/10 p-3 bg-sand/30"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  value={sec.label}
+                  onChange={(e) =>
+                    updateSection(sec.id, "label", e.target.value)
+                  }
+                  placeholder="اسم الخانة (مثلاً: المزامير)"
+                  className="flex-1 rounded-lg border border-black/10 px-3 py-2 text-sm font-bold outline-none focus:border-teal"
+                />
+                <button
+                  onClick={() => moveSection(idx, -1)}
+                  className="grid place-items-center h-8 w-8 rounded-lg bg-white border border-black/10 text-ink/60"
+                >
+                  <ChevronUp size={15} />
+                </button>
+                <button
+                  onClick={() => moveSection(idx, 1)}
+                  className="grid place-items-center h-8 w-8 rounded-lg bg-white border border-black/10 text-ink/60"
+                >
+                  <ChevronDown size={15} />
+                </button>
+                <button
+                  onClick={() => deleteSection(sec.id)}
+                  className="grid place-items-center h-8 w-8 rounded-lg bg-red-100 text-red-600"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+              <textarea
+                value={sec.content}
+                onChange={(e) =>
+                  updateSection(sec.id, "content", e.target.value)
+                }
+                placeholder="الصق محتوى الخانة هنا..."
+                rows={4}
+                className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal leading-relaxed"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* add section */}
+        <div className="flex gap-2 mt-4">
+          <input
+            value={newSection}
+            onChange={(e) => setNewSection(e.target.value)}
+            placeholder="اسم خانة جديدة (المقدمة، الإنجيل...)"
+            className="flex-1 rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-teal"
+          />
+          <button
+            onClick={() => addSection(newSection)}
+            className="btn-primary py-2.5 px-4"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+      </Card>
+    );
+  }
+
+  // ── prayers list ──
+  return (
+    <Card icon={Cross} title="إدارة الصلوات">
+      <div className="flex gap-2 mb-4">
+        <input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="عنوان صلاة جديدة"
+          className="flex-1 rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-teal"
+        />
+        <button onClick={addPrayer} className="btn-primary py-2.5 px-4">
+          <Plus size={18} /> إضافة
+        </button>
+      </div>
+
+      {prayers.length === 0 ? (
+        <p className="text-center text-ink/40 text-sm py-2">
+          لا توجد صلوات بعد.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {prayers.map((p) => (
+            <div
+              key={p.id}
+              className="flex items-center gap-2 rounded-xl bg-sand/60 px-3 py-2.5"
+            >
+              <Cross size={16} className="text-teal shrink-0" />
+              <span className="flex-1 font-bold text-deep text-sm truncate">
+                {p.title}
+                <span className="text-ink/40 font-normal">
+                  {" "}
+                  · {(p.sections || []).length} أقسام
+                </span>
+              </span>
+              <button
+                onClick={() => setOpenId(p.id)}
+                className="text-xs font-bold text-teal px-2 py-1"
+              >
+                تعديل
+              </button>
+              <button
+                onClick={() => deletePrayer(p.id)}
+                className="grid place-items-center h-8 w-8 rounded-lg bg-red-100 text-red-600"
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/* ───────────────────────── BIBLE MANAGER ───────────────────────── */
+function BibleManager() {
+  const [bible, setBible] = useStore("bible", []);
+  const [openId, setOpenId] = useState(null);
+  const [newBook, setNewBook] = useState("");
+  const [chapNum, setChapNum] = useState("");
+  const [chapContent, setChapContent] = useState("");
+
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const active = bible.find((b) => b.id === openId);
+
+  const addBook = () => {
+    if (!newBook.trim()) return;
+    const b = { id: `bk_${Date.now()}`, book: newBook.trim(), chapters: [] };
+    setBible([...bible, b]);
+    setNewBook("");
+    setOpenId(b.id);
+  };
+
+  const deleteBook = (id) => {
+    if (!window.confirm("حذف السفر نهائياً؟")) return;
+    setBible(bible.filter((b) => b.id !== id));
+    if (openId === id) setOpenId(null);
+  };
+
+  const addChapter = () => {
+    if (!chapNum.trim() || !chapContent.trim()) return;
+    const next = clone(bible);
+    const b = next.find((x) => x.id === openId);
+    b.chapters = b.chapters || [];
+    b.chapters.push({
+      id: `ch_${Date.now()}`,
+      num: chapNum.trim(),
+      content: chapContent.trim(),
+    });
+    setBible(next);
+    setChapNum("");
+    setChapContent("");
+  };
+
+  const updateChapter = (chId, field, value) => {
+    const next = clone(bible);
+    const b = next.find((x) => x.id === openId);
+    const c = b.chapters.find((x) => x.id === chId);
+    c[field] = value;
+    setBible(next);
+  };
+
+  const deleteChapter = (chId) => {
+    const next = clone(bible);
+    const b = next.find((x) => x.id === openId);
+    b.chapters = b.chapters.filter((c) => c.id !== chId);
+    setBible(next);
+  };
+
+  // ── editing a book's chapters ──
+  if (active) {
+    return (
+      <Card icon={BookMarked} title={`إصحاحات: ${active.book}`}>
+        <button
+          onClick={() => setOpenId(null)}
+          className="text-sm font-bold text-teal mb-3"
+        >
+          ← كل الأسفار
+        </button>
+
+        {/* add chapter */}
+        <div className="rounded-2xl border border-black/10 p-3 bg-sand/30 mb-4">
+          <p className="text-sm font-bold text-deep mb-2">إضافة إصحاح</p>
+          <input
+            value={chapNum}
+            onChange={(e) => setChapNum(e.target.value)}
+            placeholder="رقم الإصحاح (مثلاً: 1)"
+            className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal mb-2 latin"
+            dir="ltr"
+          />
+          <textarea
+            value={chapContent}
+            onChange={(e) => setChapContent(e.target.value)}
+            placeholder="الصق نص الإصحاح كامل هنا..."
+            rows={5}
+            className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal leading-relaxed mb-2"
+          />
+          <button onClick={addChapter} className="btn-primary w-full py-2.5">
+            <Plus size={18} /> إضافة الإصحاح
+          </button>
+        </div>
+
+        {/* existing chapters */}
+        <div className="flex flex-col gap-2">
+          {(active.chapters || []).map((c) => (
+            <details
+              key={c.id}
+              className="rounded-xl border border-black/10 bg-white overflow-hidden"
+            >
+              <summary className="flex items-center gap-2 px-3 py-2.5 cursor-pointer">
+                <span className="font-bold text-deep text-sm flex-1">
+                  إصحاح {c.num}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    deleteChapter(c.id);
+                  }}
+                  className="grid place-items-center h-7 w-7 rounded-lg bg-red-100 text-red-600"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </summary>
+              <div className="p-3 border-t border-black/5">
+                <textarea
+                  value={c.content}
+                  onChange={(e) => updateChapter(c.id, "content", e.target.value)}
+                  rows={5}
+                  className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal leading-relaxed"
+                />
+              </div>
+            </details>
+          ))}
+          {(active.chapters || []).length === 0 && (
+            <p className="text-center text-ink/40 text-sm py-2">
+              لا توجد إصحاحات بعد.
+            </p>
+          )}
+        </div>
+      </Card>
+    );
+  }
+
+  // ── books list ──
+  return (
+    <Card icon={BookMarked} title="إدارة الكتاب المقدس">
+      <p className="text-xs text-ink/50 mb-3 leading-relaxed">
+        أضف سفرًا، ثم افتحه لإضافة إصحاحاته ولصق محتوى كل إصحاح.
+      </p>
+      <div className="flex gap-2 mb-4">
+        <input
+          value={newBook}
+          onChange={(e) => setNewBook(e.target.value)}
+          placeholder="اسم السفر (مثلاً: إنجيل يوحنا)"
+          className="flex-1 rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-teal"
+        />
+        <button onClick={addBook} className="btn-primary py-2.5 px-4">
+          <Plus size={18} /> إضافة
+        </button>
+      </div>
+
+      {bible.length === 0 ? (
+        <p className="text-center text-ink/40 text-sm py-2">
+          لا توجد أسفار بعد.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {bible.map((b) => (
+            <div
+              key={b.id}
+              className="flex items-center gap-2 rounded-xl bg-sand/60 px-3 py-2.5"
+            >
+              <BookMarked size={16} className="text-gold shrink-0" />
+              <span className="flex-1 font-bold text-deep text-sm truncate">
+                {b.book}
+                <span className="text-ink/40 font-normal">
+                  {" "}
+                  · {(b.chapters || []).length} إصحاح
+                </span>
+              </span>
+              <button
+                onClick={() => setOpenId(b.id)}
+                className="text-xs font-bold text-teal px-2 py-1"
+              >
+                الإصحاحات
+              </button>
+              <button
+                onClick={() => deleteBook(b.id)}
+                className="grid place-items-center h-8 w-8 rounded-lg bg-red-100 text-red-600"
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 /* ───────────────────────── MAIN PANEL ───────────────────────── */
 export default function Admin() {
   const { isAdmin, checked, logout } = useAuth();
@@ -864,6 +1252,8 @@ export default function Admin() {
         <PointsManager />
         <RankingPublish />
         <ScheduleManager />
+        <PrayersManager />
+        <BibleManager />
         <GalleryManager />
         <HymnsManager />
         <DriveContentManager
