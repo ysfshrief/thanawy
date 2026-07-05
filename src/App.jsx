@@ -12,6 +12,8 @@ import Hymns from "./pages/Hymns";
 import HymnDetail from "./pages/HymnDetail";
 import Content from "./pages/Content";
 import Rankings from "./pages/Rankings";
+import Prayers from "./pages/Prayers";
+import Bible from "./pages/Bible";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -42,6 +44,8 @@ export default function App() {
           <Route path="/hymns" element={<Hymns />} />
           <Route path="/hymns/:id" element={<HymnDetail />} />
           <Route path="/content" element={<Content />} />
+          <Route path="/prayers" element={<Prayers />} />
+          <Route path="/bible" element={<Bible />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
