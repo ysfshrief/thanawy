@@ -4,8 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { useStore } from "../lib/hooks";
 import { store } from "../lib/store";
 import { firebaseReady } from "../lib/firebase";
-import { TEAMS } from "../lib/seed";
-import { toArabicDigits, drivePreview } from "../lib/utils";
+import { TEAMS, SCHEDULE as SEED_SCHEDULE } from "../lib/seed";
+import { toArabicDigits, drivePreview, fmtTime } from "../lib/utils";
 import {
   ShieldCheck,
   LogOut,
@@ -24,6 +24,10 @@ import {
   Database,
   HardDrive,
   Pencil,
+  CalendarDays,
+  ChevronUp,
+  ChevronDown,
+  RotateCcw,
 } from "lucide-react";
 
 /* ───────────────────────── LOGIN ───────────────────────── */
@@ -577,6 +581,239 @@ function DriveContentManager({ storeKey, icon, title }) {
   );
 }
 
+/* ───────────────────────── SCHEDULE MANAGER ───────────────────────── */
+function ScheduleManager() {
+  const [customSchedule, setCustomSchedule] = useStore("schedule", null);
+  const [state, setState] = useStore("scheduleState", { hidden: false });
+
+  // working copy: custom if present, else the seed default
+  const schedule =
+    Array.isArray(customSchedule) && customSchedule.length
+      ? customSchedule
+      : SEED_SCHEDULE;
+
+  const [activeDay, setActiveDay] = useState(schedule[0]?.id);
+  const day = schedule.find((d) => d.id === activeDay) || schedule[0];
+
+  // deep clone helper
+  const clone = (s) => JSON.parse(JSON.stringify(s));
+
+  const persist = (next) => setCustomSchedule(next);
+
+  const updateItem = (dayId, idx, field, value) => {
+    const next = clone(schedule);
+    const d = next.find((x) => x.id === dayId);
+    d.items[idx][field] = value;
+    persist(next);
+  };
+
+  const addItem = (dayId) => {
+    const next = clone(schedule);
+    const d = next.find((x) => x.id === dayId);
+    d.items.push({
+      start: "12:00",
+      end: "13:00",
+      title: "فقرة جديدة",
+      desc: "",
+      icon: "📌",
+    });
+    persist(next);
+  };
+
+  const deleteItem = (dayId, idx) => {
+    const next = clone(schedule);
+    const d = next.find((x) => x.id === dayId);
+    d.items.splice(idx, 1);
+    persist(next);
+  };
+
+  const moveItem = (dayId, idx, dir) => {
+    const next = clone(schedule);
+    const d = next.find((x) => x.id === dayId);
+    const j = idx + dir;
+    if (j < 0 || j >= d.items.length) return;
+    [d.items[idx], d.items[j]] = [d.items[j], d.items[idx]];
+    persist(next);
+  };
+
+  const resetDefault = () => {
+    if (
+      window.confirm(
+        "هيتم استرجاع البرنامج الأصلي وإلغاء كل التعديلات. متأكد؟"
+      )
+    ) {
+      setCustomSchedule(null);
+    }
+  };
+
+  const hidden = state?.hidden;
+
+  return (
+    <Card
+      icon={CalendarDays}
+      title="إدارة البرنامج"
+      right={
+        <button
+          onClick={() => setState({ hidden: !hidden })}
+          className={`chip ${
+            hidden ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"
+          }`}
+        >
+          {hidden ? (
+            <>
+              <EyeOff size={13} /> مخفي
+            </>
+          ) : (
+            <>
+              <Eye size={13} /> ظاهر
+            </>
+          )}
+        </button>
+      }
+    >
+      {/* show/hide + reset controls */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setState({ hidden: !hidden })}
+          className={`flex-1 ${hidden ? "btn-gold" : "btn-soft"} py-2.5`}
+        >
+          {hidden ? (
+            <>
+              <Eye size={16} /> إظهار البرنامج
+            </>
+          ) : (
+            <>
+              <EyeOff size={16} /> إخفاء البرنامج
+            </>
+          )}
+        </button>
+        <button
+          onClick={resetDefault}
+          className="btn-soft py-2.5 px-4"
+          title="استرجاع الأصلي"
+        >
+          <RotateCcw size={16} />
+        </button>
+      </div>
+
+      {/* day tabs */}
+      <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
+        {schedule.map((d) => (
+          <button
+            key={d.id}
+            onClick={() => setActiveDay(d.id)}
+            className={`shrink-0 rounded-xl px-3 py-2 text-sm font-bold ${
+              d.id === activeDay
+                ? "bg-teal text-white"
+                : "bg-sand text-deep"
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+
+      {/* items editor */}
+      <div className="flex flex-col gap-3">
+        {day?.items.map((item, idx) => (
+          <div
+            key={idx}
+            className="rounded-2xl border border-black/10 p-3 bg-sand/30"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                value={item.icon}
+                onChange={(e) =>
+                  updateItem(day.id, idx, "icon", e.target.value)
+                }
+                className="w-11 text-center rounded-lg border border-black/10 px-1 py-2 text-lg outline-none focus:border-teal"
+                maxLength={2}
+              />
+              <input
+                value={item.title}
+                onChange={(e) =>
+                  updateItem(day.id, idx, "title", e.target.value)
+                }
+                placeholder="اسم الفقرة"
+                className="flex-1 rounded-lg border border-black/10 px-3 py-2 text-sm font-bold outline-none focus:border-teal"
+              />
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex-1">
+                <label className="text-[10px] text-ink/50 font-bold">
+                  البداية
+                </label>
+                <input
+                  type="time"
+                  value={item.start.replace("24:", "00:").slice(0, 5)}
+                  onChange={(e) =>
+                    updateItem(day.id, idx, "start", e.target.value)
+                  }
+                  className="w-full rounded-lg border border-black/10 px-2 py-1.5 text-sm latin outline-none focus:border-teal"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-[10px] text-ink/50 font-bold">
+                  النهاية
+                </label>
+                <input
+                  type="time"
+                  value={item.end.replace("24:", "00:").slice(0, 5)}
+                  onChange={(e) =>
+                    updateItem(day.id, idx, "end", e.target.value)
+                  }
+                  className="w-full rounded-lg border border-black/10 px-2 py-1.5 text-sm latin outline-none focus:border-teal"
+                />
+              </div>
+            </div>
+            <input
+              value={item.desc || ""}
+              onChange={(e) => updateItem(day.id, idx, "desc", e.target.value)}
+              placeholder="وصف (اختياري)"
+              className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal mb-2"
+            />
+            <div className="flex items-center justify-between">
+              <span className="latin text-xs text-ink/50">
+                {fmtTime(item.start)} – {fmtTime(item.end)}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => moveItem(day.id, idx, -1)}
+                  className="grid place-items-center h-8 w-8 rounded-lg bg-white border border-black/10 text-ink/60"
+                  title="لأعلى"
+                >
+                  <ChevronUp size={15} />
+                </button>
+                <button
+                  onClick={() => moveItem(day.id, idx, 1)}
+                  className="grid place-items-center h-8 w-8 rounded-lg bg-white border border-black/10 text-ink/60"
+                  title="لأسفل"
+                >
+                  <ChevronDown size={15} />
+                </button>
+                <button
+                  onClick={() => deleteItem(day.id, idx)}
+                  className="grid place-items-center h-8 w-8 rounded-lg bg-red-100 text-red-600"
+                  title="حذف"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <button
+        onClick={() => addItem(day.id)}
+        className="btn-primary w-full mt-3 py-2.5"
+      >
+        <Plus size={18} /> إضافة فقرة لـ{day?.label}
+      </button>
+    </Card>
+  );
+}
+
 /* ───────────────────────── MAIN PANEL ───────────────────────── */
 export default function Admin() {
   const { isAdmin, checked, logout } = useAuth();
@@ -626,6 +863,7 @@ export default function Admin() {
       <div className="mx-auto max-w-3xl px-5 py-5 grid gap-5">
         <PointsManager />
         <RankingPublish />
+        <ScheduleManager />
         <GalleryManager />
         <HymnsManager />
         <DriveContentManager
