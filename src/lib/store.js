@@ -31,6 +31,8 @@ const DEFAULTS = {
   teamLogos: {}, // { teamId: driveUrl }
   schedule: null, // custom schedule (null = use built-in seed)
   scheduleState: { hidden: false }, // admin show/hide the schedule
+  prayers: [], // [{ id, title, sections: [{ id, label, content }] }]
+  bible: [], // [{ id, book, chapters: [{ id, num, content }] }]
 };
 
 function lsGet(key) {
