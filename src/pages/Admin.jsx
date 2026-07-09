@@ -29,6 +29,7 @@ import {
   ChevronDown,
   RotateCcw,
   Palette,
+  Users,
   BookMarked,
 } from "lucide-react";
 
