@@ -28,6 +28,7 @@ import {
   ChevronUp,
   ChevronDown,
   RotateCcw,
+  Palette,
   BookMarked,
 } from "lucide-react";
 
@@ -53,8 +54,8 @@ function Login() {
             alt="شعار الكنيسة"
             className="w-24 mx-auto"
           />
-          <p className="text-white font-display font-extrabold text-lg mt-3">
-            خلوة ثانوي بنين
+          <p className="text-white font-display font-extrabold text-lg mt-3 latin">
+            2Ⲃⲟⲗⲓⲥ
           </p>
           <p className="text-white/60 mt-1 flex items-center justify-center gap-1.5 text-sm">
             <ShieldCheck size={15} /> لوحة تحكم المشرف
@@ -1201,6 +1202,196 @@ function BibleManager() {
   );
 }
 
+/* ───────────────────────── TEAMS MANAGER (rename + image) ───────────────────────── */
+function TeamsManager() {
+  const [overrides, setOverrides] = useStore("teamOverrides", {});
+  const [draft, setDraft] = useState({});
+
+  const val = (id, field) =>
+    draft[id]?.[field] ?? overrides?.[id]?.[field] ?? "";
+
+  const setField = (id, field, value) =>
+    setDraft({ ...draft, [id]: { ...draft[id], [field]: value } });
+
+  const save = (id) => {
+    const cur = overrides?.[id] || {};
+    const next = {
+      ...overrides,
+      [id]: {
+        name: draft[id]?.name ?? cur.name ?? "",
+        image: draft[id]?.image ?? cur.image ?? "",
+      },
+    };
+    setOverrides(next);
+  };
+
+  const reset = (id) => {
+    const next = { ...overrides };
+    delete next[id];
+    setOverrides(next);
+    setDraft({ ...draft, [id]: undefined });
+  };
+
+  return (
+    <Card icon={Users} title="تعديل الفرق">
+      <p className="text-xs text-ink/55 mb-4 leading-relaxed">
+        غيّر اسم أي فريق أو أضف صورته عبر رابط
+        <span className="latin"> Google Drive</span>. اترك الخانة فارغة للرجوع
+        للأصلي.
+      </p>
+      <div className="flex flex-col gap-5">
+        {TEAMS.map((t) => (
+          <div key={t.id} className="rounded-2xl border border-black/10 p-3">
+            <p className="text-sm font-bold text-deep mb-2 flex items-center gap-1.5">
+              <span
+                className="h-4 w-4 rounded-full shrink-0"
+                style={{ background: t.color }}
+              />
+              {t.name}
+            </p>
+            <label className="text-[11px] text-ink/50 font-bold">
+              الاسم الجديد
+            </label>
+            <input
+              value={val(t.id, "name")}
+              onChange={(e) => setField(t.id, "name", e.target.value)}
+              placeholder={t.name}
+              className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-teal mb-2"
+            />
+            <label className="text-[11px] text-ink/50 font-bold">
+              رابط صورة الفريق (Drive)
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="h-11 w-11 rounded-lg overflow-hidden bg-sand grid place-items-center shrink-0 border border-black/10">
+                {val(t.id, "image") ? (
+                  <img
+                    src={drivePreview(val(t.id, "image"))}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={t.image}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </span>
+              <input
+                value={val(t.id, "image")}
+                onChange={(e) => setField(t.id, "image", e.target.value)}
+                placeholder="رابط Google Drive"
+                dir="ltr"
+                className="flex-1 min-w-0 rounded-lg border border-black/10 px-3 py-2 text-sm latin outline-none focus:border-teal"
+              />
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => save(t.id)}
+                className="btn-primary flex-1 py-2"
+              >
+                <Check size={16} /> حفظ
+              </button>
+              <button
+                onClick={() => reset(t.id)}
+                className="btn-soft py-2 px-3"
+                title="رجوع للأصلي"
+              >
+                <RotateCcw size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+/* ───────────────────────── APPEARANCE MANAGER ───────────────────────── */
+function AppearanceManager() {
+  const [appearance, setAppearance] = useStore("appearance", {});
+  const [draft, setDraft] = useState({});
+
+  const val = (k) => draft[k] ?? appearance?.[k] ?? "";
+  const setVal = (k, v) => setDraft({ ...draft, [k]: v });
+
+  const saveAll = () => {
+    setAppearance({ ...appearance, ...draft });
+    setDraft({});
+  };
+
+  const clearField = (k) => {
+    const next = { ...appearance };
+    delete next[k];
+    setAppearance(next);
+    setDraft({ ...draft, [k]: "" });
+  };
+
+  const fields = [
+    {
+      key: "heroImage",
+      label: "خلفية الصفحة الرئيسية",
+      hint: "رابط Drive لصورة تظهر خلف اللوجو (اختياري)",
+    },
+    {
+      key: "heroColor",
+      label: "لون خلفية الرئيسية",
+      hint: "كود لون مثل #12303b (اختياري)",
+      color: true,
+    },
+    {
+      key: "accentColor",
+      label: "اللون المميّز (الذهبي)",
+      hint: "كود لون مثل #c9962f (اختياري)",
+      color: true,
+    },
+  ];
+
+  return (
+    <Card icon={Palette} title="مظهر الموقع">
+      <p className="text-xs text-ink/55 mb-4 leading-relaxed">
+        تحكّم في الصور والخلفيات والألوان. اترك أي خانة فارغة لاستخدام التصميم
+        الأصلي. هذه الإعدادات لا تؤثر على المحتوى (الترانيم، الصلوات، البرنامج).
+      </p>
+      <div className="flex flex-col gap-4">
+        {fields.map((f) => (
+          <div key={f.key}>
+            <label className="text-sm font-bold text-deep">{f.label}</label>
+            <p className="text-[11px] text-ink/45 mb-1.5">{f.hint}</p>
+            <div className="flex items-center gap-2">
+              {f.color && val(f.key) && (
+                <span
+                  className="h-9 w-9 rounded-lg border border-black/10 shrink-0"
+                  style={{ background: val(f.key) }}
+                />
+              )}
+              <input
+                value={val(f.key)}
+                onChange={(e) => setVal(f.key, e.target.value)}
+                placeholder={f.color ? "#000000" : "رابط Google Drive"}
+                dir={f.color ? "ltr" : "ltr"}
+                className="flex-1 min-w-0 rounded-lg border border-black/10 px-3 py-2 text-sm latin outline-none focus:border-teal"
+              />
+              {(appearance?.[f.key] || draft[f.key]) && (
+                <button
+                  onClick={() => clearField(f.key)}
+                  className="grid place-items-center h-9 w-9 rounded-lg bg-red-100 text-red-600 shrink-0"
+                  title="مسح"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={saveAll} className="btn-primary w-full mt-4 py-2.5">
+        <Check size={18} /> حفظ المظهر
+      </button>
+    </Card>
+  );
+}
+
 /* ───────────────────────── MAIN PANEL ───────────────────────── */
 export default function Admin() {
   const { isAdmin, checked, logout } = useAuth();
@@ -1250,6 +1441,7 @@ export default function Admin() {
       <div className="mx-auto max-w-3xl px-5 py-5 grid gap-5">
         <PointsManager />
         <RankingPublish />
+        <TeamsManager />
         <ScheduleManager />
         <PrayersManager />
         <BibleManager />
@@ -1266,6 +1458,7 @@ export default function Admin() {
           title="الكلمة الروحية"
         />
         <TeamLogos />
+        <AppearanceManager />
       </div>
     </div>
   );
