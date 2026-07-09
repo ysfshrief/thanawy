@@ -33,6 +33,8 @@ const DEFAULTS = {
   scheduleState: { hidden: false }, // admin show/hide the schedule
   prayers: [], // [{ id, title, sections: [{ id, label, content }] }]
   bible: [], // [{ id, book, chapters: [{ id, num, content }] }]
+  teamOverrides: {}, // { teamId: { name, image } } admin edits to team name/image
+  appearance: {}, // { heroImage, ... } drive links for site images
 };
 
 function lsGet(key) {

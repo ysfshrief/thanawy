@@ -1,5 +1,4 @@
-import { TEAMS } from "../lib/seed";
-import { useStore } from "../lib/hooks";
+import { useStore, useTeams } from "../lib/hooks";
 import { toArabicDigits, drivePreview } from "../lib/utils";
 import { Trophy, Lock, Crown } from "lucide-react";
 
@@ -7,6 +6,7 @@ export default function Rankings() {
   const [points] = useStore("points", {});
   const [rankingState] = useStore("rankingState", { published: false });
   const [logos] = useStore("teamLogos", {});
+  const TEAMS = useTeams();
 
   const ranked = [...TEAMS]
     .map((t) => ({ ...t, score: points[t.id] || 0 }))

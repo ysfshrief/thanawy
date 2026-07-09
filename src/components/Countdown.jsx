@@ -32,7 +32,7 @@ export default function Countdown({ targetISO }) {
       <div className="mx-auto max-w-md rounded-2xl bg-ink/70 border border-gold/40 px-6 py-5 backdrop-blur-sm">
         <p className="text-2xl mb-1">🕊️</p>
         <p className="font-display text-lg font-extrabold text-gold leading-relaxed">
-          انتهت خلوة ثانوي بنين
+          انتهت الخلوة
         </p>
         <p className="text-white/85 text-sm mt-1 leading-relaxed">
           نشكر جميع المشاركين ونتمنى لكم ثمارًا روحية دائمة ❤️

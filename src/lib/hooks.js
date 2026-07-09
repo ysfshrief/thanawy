@@ -37,3 +37,20 @@ export function useNow(intervalMs = 1000) {
   }, [intervalMs]);
   return now;
 }
+
+// Merge seed TEAMS with admin overrides (custom name/image per team).
+// Returns teams array where name/image reflect admin edits if present.
+import { TEAMS } from "./seed";
+import { drivePreview } from "./utils";
+
+export function useTeams() {
+  const [overrides] = useStore("teamOverrides", {});
+  return TEAMS.map((t) => {
+    const o = overrides?.[t.id] || {};
+    return {
+      ...t,
+      name: o.name?.trim() ? o.name : t.name,
+      image: o.image?.trim() ? drivePreview(o.image) : t.image,
+    };
+  });
+}

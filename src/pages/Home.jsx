@@ -1,23 +1,39 @@
 import { Link } from "react-router-dom";
 import { RETREAT, SCHEDULE } from "../lib/seed";
-import { resolveScheduleState } from "../lib/utils";
-import { useNow } from "../lib/hooks";
+import { resolveScheduleState, drivePreview } from "../lib/utils";
+import { useNow, useStore } from "../lib/hooks";
 import Countdown from "../components/Countdown";
 import { MapPin, CalendarDays, ArrowLeft, Clock, Sparkles } from "lucide-react";
 
 export default function Home() {
   const now = useNow(30000);
   const { current, next } = resolveScheduleState(SCHEDULE, now);
+  const [appearance] = useStore("appearance", {});
+
+  // optional admin overrides — fall back to the built-in design if empty
+  const heroColor = appearance?.heroColor?.trim() || null;
+  const heroImage = appearance?.heroImage?.trim()
+    ? drivePreview(appearance.heroImage)
+    : null;
 
   return (
     <div className="animate-fadeUp">
       {/* ───────── HERO : branded gradient + church logo ───────── */}
       <section className="relative overflow-hidden">
-        {/* branded gradient background (site identity, no photo) */}
+        {/* optional admin hero image, behind the gradient */}
+        {heroImage && (
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-40"
+            style={{ backgroundImage: `url(${heroImage})` }}
+          />
+        )}
+        {/* branded gradient background (site identity) */}
         <div
           className="absolute inset-0"
           style={{
-            background:
+            background: heroColor
+              ? `linear-gradient(160deg, ${heroColor}, #12303b 60%, #1d5b6e 100%)`
+              :
               "linear-gradient(160deg, #0c1620 0%, #12303b 45%, #1d5b6e 100%)",
           }}
         />
@@ -32,8 +48,8 @@ export default function Home() {
         />
 
         <div className="relative mx-auto max-w-3xl px-5 pt-10 pb-9 text-center">
-          {/* church logo in an elegant dark glassmorphism frame */}
-          <div className="relative mx-auto w-[60%] max-w-[230px]">
+          {/* logos in an elegant dark glassmorphism frame */}
+          <div className="relative mx-auto w-[85%] max-w-md">
             <div
               className="absolute inset-0 -z-10 rounded-[2rem] blur-2xl opacity-60"
               style={{
@@ -42,25 +58,36 @@ export default function Home() {
               }}
             />
             <div
-              className="rounded-[1.75rem] p-5 border backdrop-blur-md shadow-[0_12px_40px_-8px_rgba(0,0,0,0.6)]"
+              className="rounded-[1.75rem] px-6 py-5 border backdrop-blur-md shadow-[0_12px_40px_-8px_rgba(0,0,0,0.6)]"
               style={{
                 background:
                   "linear-gradient(160deg, rgba(10,18,30,0.55), rgba(18,30,40,0.5))",
                 borderColor: "rgba(201,150,47,0.35)",
               }}
             >
-              <img
-                src="/assets/church-logo.png"
-                alt="شعار الكنيسة"
-                className="mx-auto w-full drop-shadow-[0_4px_18px_rgba(0,0,0,0.55)]"
-              />
+              <div className="flex items-center justify-center gap-4">
+                <img
+                  src="/assets/church-logo.png"
+                  alt="شعار الكنيسة"
+                  className="h-20 w-20 object-contain shrink-0 drop-shadow-[0_4px_18px_rgba(0,0,0,0.55)]"
+                />
+                <span className="w-px h-16 bg-gold/30" />
+                <img
+                  src="/assets/camp-logo.png"
+                  alt="شعار الخلوة"
+                  className="flex-1 max-w-[190px] object-contain drop-shadow-[0_4px_18px_rgba(0,0,0,0.55)]"
+                />
+              </div>
             </div>
           </div>
 
           {/* title */}
-          <h1 className="mt-5 font-display text-3xl sm:text-4xl font-extrabold text-white drop-shadow-md">
+          <h1 className="mt-5 font-display text-4xl sm:text-5xl font-extrabold text-white drop-shadow-md latin">
             {RETREAT.title}
           </h1>
+          <p className="mt-1 text-gold font-extrabold text-lg drop-shadow">
+            {RETREAT.subtitle}
+          </p>
 
           {/* meta chips */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
@@ -141,7 +168,7 @@ export default function Home() {
         >
           <span className="text-3xl">⛪</span>
           <p className="mt-2 font-display text-xl font-extrabold">
-            أهلاً بكم في خلوة ثانوي بنين
+            أهلاً بكم في خلوة 2Ⲃⲟⲗⲓⲥ
           </p>
           <p className="text-white/80 text-sm mt-2 leading-relaxed">
             ثلاثة أيام من الروحانية والفرح والخدمة معًا

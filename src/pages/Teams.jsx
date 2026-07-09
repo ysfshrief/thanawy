@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { TEAMS } from "../lib/seed";
-import { useStore } from "../lib/hooks";
+import { useTeams, useStore } from "../lib/hooks";
 import { toArabicDigits, drivePreview } from "../lib/utils";
 import { Users, ArrowLeft, Trophy, Crown } from "lucide-react";
 
 export default function Teams() {
+  const teams = useTeams();
   const [logos] = useStore("teamLogos", {});
 
   return (
@@ -22,7 +22,7 @@ export default function Teams() {
       </header>
 
       <div className="flex flex-col gap-5">
-        {TEAMS.map((team, i) => (
+        {teams.map((team, i) => (
           <Link
             key={team.id}
             to={`/teams/${team.id}`}

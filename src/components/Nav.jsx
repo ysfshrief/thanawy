@@ -22,11 +22,11 @@ export function TopBar() {
             className="h-10 w-10 object-contain"
           />
           <div className="leading-tight">
-            <p className="font-display text-lg font-extrabold text-deep">
-              خلوة ثانوي بنين
+            <p className="font-display text-lg font-extrabold text-deep latin">
+              2Ⲃⲟⲗⲓⲥ
             </p>
             <p className="text-[11px] font-bold text-teal/70 -mt-0.5">
-              كنيسة الملاك ميخائيل بدمنهور
+              خدمة ثانوي بنين
             </p>
           </div>
         </Link>

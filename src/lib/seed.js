@@ -198,9 +198,9 @@ export const SEED_HYMNS = [
 ];
 
 export const RETREAT = {
-  title: "خلوة ثانوي بنين",
-  titleAr: "خلوة ثانوي بنين",
-  subtitle: "خلوة ثانوي بنين",
+  title: "2Ⲃⲟⲗⲓⲥ",
+  titleAr: "2Ⲃⲟⲗⲓⲥ",
+  subtitle: "خدمة ثانوي بنين",
   // مواعيد الخلوة
   startISO: "2026-07-09T09:00:00+02:00",
   endISO: "2026-07-11T13:00:00+02:00",

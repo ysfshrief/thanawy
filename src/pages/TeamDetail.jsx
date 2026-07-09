@@ -1,13 +1,13 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { TEAMS } from "../lib/seed";
-import { useStore } from "../lib/hooks";
+import { useStore, useTeams } from "../lib/hooks";
 import { toArabicDigits, drivePreview } from "../lib/utils";
 import { ArrowRight, Users, Crown, Star } from "lucide-react";
 
 export default function TeamDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const team = TEAMS.find((t) => t.id === id);
+  const teams = useTeams();
+  const team = teams.find((t) => t.id === id);
   const [logos] = useStore("teamLogos", {});
 
   if (!team) {
